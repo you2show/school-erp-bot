@@ -1,0 +1,22 @@
+{
+  "adminSecret": "admin123",
+  "allowedUsers": [
+    639844644,
+    1276188382
+  ],
+  "admins": [
+    639844644,
+    1276188382
+  ],
+  "subscribers": [
+    639844644,
+    1276188382
+  ],
+  "userLanguages": {
+    "639844644": "ar",
+    "1276188382": "en"
+  },
+  "autoReportEnabled": true,
+  "autoReportCron": "0 8 1 * *",
+  "lastReportSent": null
+}

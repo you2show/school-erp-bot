@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: school-erp-telegram-bot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_SECRET
+        value: admin123

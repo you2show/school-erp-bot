@@ -1,0 +1,524 @@
+{
+  "schools": [
+    {
+      "id": "al_firdaws",
+      "name_ar": "مدرسة الفردوس",
+      "name_en": "Al-Firdaws School",
+      "name_kh": "សាលា អាល់ហ្វៀរដោស",
+      "order": 1,
+      "classrooms_info_ar": "٥ فصول دراسية (فصل لرياض الأطفال، و ٤ فصول للمرحلة الابتدائية) ومكتبة واحدة",
+      "classrooms_info_en": "5 classrooms (1 Kindergarten, 4 Primary) and 1 library",
+      "classrooms_info": "៥ បន្ទប់រៀន (១ មត្តេយ្យ, ៤ បឋមសិក្សា) និង បណ្ណាល័យ ១",
+      "classrooms_count": 5,
+      "library_count": 1,
+      "students": {
+        "boys": 59,
+        "girls": 51,
+        "total": 110
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ فكري بن أيوب",
+          "name_en": "Ustadh Fikri bin Ayyub",
+          "name_kh": "លោកគ្រូ ហ្វិកគ្រី ប៊ីន អាយុប",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ إسماعيل بن قاسم",
+          "name_en": "Ustadh Ismail bin Qasim",
+          "name_kh": "លោកគ្រូ អ៊ីស្មាអែល ប៊ីន កាស៊ីម",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذة راحمة بنت قاسم",
+          "name_en": "Ustadha Rahmah bint Qasim",
+          "name_kh": "អ្នកគ្រូ រ៉ោះម៉ាស់ ប៊ីនទី កាស៊ីម",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "تتقاضى راتباً من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t4",
+          "name_ar": "الأستاذة عائشة بنت يوسف",
+          "name_en": "Ustadha Aisha bint Yusuf",
+          "name_kh": "អ្នកគ្រូ អាយសាស់ ប៊ីនទី យូសុហ្វ",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا تتقاضى راتباً (متطوعة)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "كادر جديد / لا تتقاضى راتباً",
+          "note_en": "New roster / Unpaid",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "al_firdaws_1.jpg",
+        "al_firdaws_2.jpg"
+      ]
+    },
+    {
+      "id": "al_sulaymaniyyah",
+      "name_ar": "مدرسة السليمانية الإسلامية",
+      "name_en": "Al-Sulaymaniyyah Islamic School",
+      "name_kh": "សាលា ស៊ូឡៃម៉ានីយ៉ាស់ អ៊ីស្លាមីយ៉ាស់",
+      "order": 2,
+      "classrooms_info_ar": "٣ فصول دراسية (جميعها للمرحلة الابتدائية)",
+      "classrooms_info_en": "3 classrooms (all Primary)",
+      "classrooms_info": "៣ បន្ទប់រៀន (កម្រិតបឋមសិក្សាទាំងអស់)",
+      "classrooms_count": 3,
+      "library_count": 0,
+      "students": {
+        "boys": 22,
+        "girls": 40,
+        "total": 62
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ زكريا بن يوسف",
+          "name_en": "Ustadh Zakariya bin Yusuf",
+          "name_kh": "លោកគ្រូ ហ្សាការីយ៉ា ប៊ីន យូសុហ្វ",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "يتقاضى راتباً من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذة حسنى بنت عبد الرشيد",
+          "name_en": "Ustadha Husna bint Abdul Rashid",
+          "name_kh": "អ្នកគ្រូ ហ៊ូស្នា ប៊ីនទី អាប់ឌុលរ៉ូស៊ីដ",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذ عبد العظيم بن يوسف",
+          "name_en": "Ustadh Abdul Azim bin Yusuf",
+          "name_kh": "លោកគ្រូ អាប់ឌុលអាហ្ស៊ីម ប៊ីន យូសុហ្វ",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t4",
+          "name_ar": "الأستاذ أسنوي بن منصور",
+          "name_en": "Ustadh Asnawi bin Mansur",
+          "name_kh": "លោកគ្រូ អាសស្នាវី ប៊ីន ម៉ាន់ស៊ួរ",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        },
+        {
+          "id": "t5",
+          "name_ar": "الأستاذ ميزان بن سليمان",
+          "name_en": "Ustadh Mizan bin Sulaiman",
+          "name_kh": "លោកគ្រូ មីហ្សាន ប៊ីន ស៊ូឡៃម៉ាន",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "منقول من مدرسة الفردوس / لا يتقاضى راتباً",
+          "note_en": "Transferred from Al-Firdaws / Unpaid",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "al_sulaymaniyyah_1.jpg"
+      ]
+    },
+    {
+      "id": "al_rahmaniyyah",
+      "name_ar": "مدرسة الرحمانية",
+      "name_en": "Al-Rahmaniyyah School",
+      "name_kh": "សាលា រ៉ោះម៉ានីយ៉ាស់",
+      "order": 3,
+      "classrooms_info_ar": "٥ فصول دراسية (فصل لرياض الأطفال، و ٤ فصول للمرحلة الابتدائية)",
+      "classrooms_info_en": "5 classrooms (1 Kindergarten, 4 Primary)",
+      "classrooms_info": "៥ បន្ទប់រៀន (១ មត្តេយ្យ, ៤ បឋមសិក្សា)",
+      "classrooms_count": 5,
+      "library_count": 0,
+      "students": {
+        "boys": 79,
+        "girls": 51,
+        "total": 130
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ شكري بن حاج عمر",
+          "name_en": "Ustadh Shukri bin Haj Omar",
+          "name_kh": "លោកគ្រូ ស៊ុកគ្រី ប៊ីន ហាជីអ៊ូម៉ារ",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ مصطفى بن سليمان",
+          "name_en": "Ustadh Mustafa bin Sulaiman",
+          "name_kh": "លោកគ្រូ មុស្តូហ្វា ប៊ីន ស៊ូឡៃម៉ាន",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذ سودي بن هارون",
+          "name_en": "Ustadh Sudi bin Harun",
+          "name_kh": "លោកគ្រូ ស៊ូឌី ប៊ីន ហារូន",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        },
+        {
+          "id": "t4",
+          "name_ar": "الأستاذ قمر الدين بن حاج عبد الغني",
+          "name_en": "Ustadh Qamar al-Din bin Haj Abdul Ghani",
+          "name_kh": "លោកគ្រូ កូម៉ារ៉ុលឌីន ប៊ីន ហាជីអាប់ឌុលហ្គូនី",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "كادر جديد / لا يتقاضى راتباً",
+          "note_en": "New roster / Unpaid",
+          "photo": null
+        },
+        {
+          "id": "t5",
+          "name_ar": "الأستاذة روحاني بنت هارون",
+          "name_en": "Ustadha Ruhani bint Harun",
+          "name_kh": "អ្នកគ្រូ រ៉ូហានី ប៊ីនទី ហារូន",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا تتقاضى راتباً (متطوعة)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا تتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "al_rahmaniyyah_1.jpg"
+      ]
+    },
+    {
+      "id": "al_dawah",
+      "name_ar": "مدرسة الدعوة الإسلامية",
+      "name_en": "Al-Da'wah Islamic School",
+      "name_kh": "សាលា ដាវ៉ាស់ អ៊ីស្លាមីយ៉ាស់",
+      "order": 4,
+      "classrooms_info_ar": "٣ فصول دراسية (فصل لرياض الأطفال، وفصلان للمرحلة الابتدائية)",
+      "classrooms_info_en": "3 classrooms (1 Kindergarten, 2 Primary)",
+      "classrooms_info": "៣ បន្ទប់រៀន (១ មត្តេយ្យ, ២ បឋមសិក្សា)",
+      "classrooms_count": 3,
+      "library_count": 0,
+      "students": {
+        "boys": 95,
+        "girls": 118,
+        "total": 213
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ عبد الحليم بن حسن",
+          "name_en": "Ustadh Abdul Halim bin Hassan",
+          "name_kh": "លោកគ្រូ អាប់ឌុលហាលីម ប៊ីន ហាសាន់",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "راتب من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ شكري بن صالح",
+          "name_en": "Ustadh Shukri bin Salih",
+          "name_kh": "លោកគ្រូ ស៊ុកគ្រី ប៊ីន ស៊ឡេះ",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "راتب من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذ زكريا بن يوسف",
+          "name_en": "Ustadh Zakariya bin Yusuf",
+          "name_kh": "លោកគ្រូ ហ្សាការីយ៉ា ប៊ីន យូសុហ្វ",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "راتب من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t4",
+          "name_ar": "الأستاذة رحمة بنت عبد الغني",
+          "name_en": "Ustadha Rahmah bint Abdul Ghani",
+          "name_kh": "អ្នកគ្រូ រ៉ោះម៉ាស់ ប៊ីនទី អាប់ឌុលហ្គូនី",
+          "salary_type": "project",
+          "salary_amount": 60,
+          "salary_text_ar": "٦٠ دولاراً شهرياً",
+          "salary_text_en": "$60/month",
+          "note_ar": "مخصص شهري (٦٠ دولاراً)",
+          "note_en": "Monthly allowance ($60)",
+          "photo": null
+        },
+        {
+          "id": "t5",
+          "name_ar": "الأستاذة عزيزة بنت محمد الزين",
+          "name_en": "Ustadha Azizah bint Muhammad Zain",
+          "name_kh": "អ្នកគ្រូ អាហ្ស៊ីហ្សាស់ ប៊ីនទី មូហាំម៉ាត់ហ្សេន",
+          "salary_type": "project",
+          "salary_amount": 60,
+          "salary_text_ar": "٦٠ دولاراً شهرياً",
+          "salary_text_en": "$60/month",
+          "note_ar": "مخصص شهري (٦٠ دولاراً)",
+          "note_en": "Monthly allowance ($60)",
+          "photo": null
+        },
+        {
+          "id": "t6",
+          "name_ar": "الأستاذة ليما بنت عبد الحليم",
+          "name_en": "Ustadha Lima bint Abdul Halim",
+          "name_kh": "អ្នកគ្រូ លីម៉ា ប៊ីនទី អាប់ឌុលហាលីម",
+          "salary_type": "project",
+          "salary_amount": 50,
+          "salary_text_ar": "٥٠ دولاراً شهرياً",
+          "salary_text_en": "$50/month",
+          "note_ar": "مخصص شهري (٥٠ دولاراً)",
+          "note_en": "Monthly allowance ($50)",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "al_dawah_1.jpg",
+        "al_dawah_2.jpg"
+      ]
+    },
+    {
+      "id": "nur_alqaryah",
+      "name_ar": "مدرسة نور القرية",
+      "name_en": "Nur Al-Qaryah School",
+      "name_kh": "សាលា នួរុលក័រយ៉ាស់",
+      "order": 5,
+      "classrooms_info_ar": "٣ فصول دراسية (فصل لرياض الأطفال، وفصلان للمرحلة الابتدائية)",
+      "classrooms_info_en": "3 classrooms (1 Kindergarten, 2 Primary)",
+      "classrooms_info": "៣ បន្ទប់រៀន (១ មត្តេយ្យ, ២ បឋមសិក្សា)",
+      "classrooms_count": 3,
+      "library_count": 0,
+      "students": {
+        "boys": 49,
+        "girls": 40,
+        "total": 89
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذة أسماء بنت زكريا",
+          "name_en": "Ustadha Asma bint Zakariya",
+          "name_kh": "អ្នកគ្រូ អាស្ម៉ា ប៊ីនទី ហ្សាការីយ៉ា",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ بصري بن عبد المطلب",
+          "name_en": "Ustadh Basri bin Abdul Muttalib",
+          "name_kh": "លោកគ្រូ បាសស្រ៊ី ប៊ីន អាប់ឌុលមុតតូលីប",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذ شكور بن علي",
+          "name_en": "Ustadh Shakur bin Ali",
+          "name_kh": "លោកគ្រូ ស៊ូកូរ ប៊ីន អាលី",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "nur_alqaryah_1.jpg",
+        "nur_alqaryah_2.jpg"
+      ]
+    },
+    {
+      "id": "al_sadaqah",
+      "name_ar": "مدرسة الصدقة للتربية والتطوير",
+      "name_en": "Al-Sadaqah School for Education & Dev",
+      "name_kh": "សាលា សូដាកោះ",
+      "order": 6,
+      "classrooms_info_ar": "فصلان دراسيان (للمرحلة الابتدائية)",
+      "classrooms_info_en": "2 classrooms (Primary)",
+      "classrooms_info": "២ បន្ទប់រៀន (កម្រិតបឋមសិក្សា)",
+      "classrooms_count": 2,
+      "library_count": 0,
+      "students": {
+        "boys": 18,
+        "girls": 13,
+        "total": 31
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ عبد الكريم بن موسى",
+          "name_en": "Ustadh Abdul Karim bin Musa",
+          "name_kh": "លោកគ្រូ អាប់ឌុលការីម ប៊ីន មូសា",
+          "salary_type": "project",
+          "salary_amount": 30,
+          "salary_text_ar": "٣٠ دولاراً شهرياً",
+          "salary_text_en": "$30/month",
+          "note_ar": "مخصص شهري (٣٠ دولاراً)",
+          "note_en": "Monthly allowance ($30)",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ منصور بن أحمد",
+          "name_en": "Ustadh Mansur bin Ahmad",
+          "name_kh": "លោកគ្រូ ម៉ាន់ស៊ួរ ប៊ីន អាម៉ាត់",
+          "salary_type": "volunteer",
+          "salary_amount": 0,
+          "salary_text_ar": "لا يتقاضى راتباً (متطوع)",
+          "salary_text_en": "No salary (Volunteer)",
+          "note_ar": "لا يتقاضى راتباً",
+          "note_en": "No salary / Volunteer",
+          "photo": null
+        }
+      ],
+      "photos": [
+        "al_sadaqah_1.jpg",
+        "al_sadaqah_2.jpg"
+      ]
+    },
+    {
+      "id": "al_amin",
+      "name_ar": "مدرسة الأمين",
+      "name_en": "Al-Amin School",
+      "name_kh": "សាលា អាល់អាមីន",
+      "order": 7,
+      "classrooms_info_ar": "المدرسة السابعة (مدرسة الأمين)",
+      "classrooms_info_en": "7th School (Al-Amin School)",
+      "classrooms_info": "សាលាទី ៧ (សាលា អាល់អាមីន)",
+      "classrooms_count": 0,
+      "library_count": 0,
+      "students": {
+        "boys": 44,
+        "girls": 49,
+        "total": 93
+      },
+      "teachers": [
+        {
+          "id": "t1",
+          "name_ar": "الأستاذ عبد الغفور بن يوسف",
+          "name_en": "Ustadh Abdul Ghafur bin Yusuf",
+          "name_kh": "លោកគ្រូ អាប់ឌុលហ្គូហ្វួរ ប៊ីន យូសុហ្វ",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "راتب من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t2",
+          "name_ar": "الأستاذ اسنوي بن صالح",
+          "name_en": "Ustadh Asnawi bin Salih",
+          "name_kh": "លោកគ្រូ អាសស្នាវី ប៊ីន ស៊ឡេះ",
+          "salary_type": "government",
+          "salary_amount": 0,
+          "salary_text_ar": "راتب حكومي",
+          "salary_text_en": "Government Salary",
+          "note_ar": "راتب من الحكومة",
+          "note_en": "Paid by Government",
+          "photo": null
+        },
+        {
+          "id": "t3",
+          "name_ar": "الأستاذ محمد بن يوسف",
+          "name_en": "Ustadh Muhammad bin Yusuf",
+          "name_kh": "លោកគ្រូ មូហាំម៉ាត់ ប៊ីន យូសុហ្វ",
+          "salary_type": "project",
+          "salary_amount": 50,
+          "salary_text_ar": "٥٠ دولاراً شهرياً",
+          "salary_text_en": "$50/month",
+          "note_ar": "مخصص شهري (٥٠ دولاراً)",
+          "note_en": "Monthly allowance ($50)",
+          "photo": null
+        }
+      ],
+      "photos": []
+    }
+  ]
+}

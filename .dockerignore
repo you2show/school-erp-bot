@@ -1,0 +1,7 @@
+node_modules
+npm-debug.log
+data/reports/*.pdf
+data/reports/*.html
+bot_service.log
+.git
+.env
