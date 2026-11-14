@@ -44,3 +44,24 @@
 | `/autoreport` | Send Monthly Auto-Report Now | بث وإرسال التقرير التلقائي فوراً |
 | `/admin` | Open Admin Dashboard | فتح لوحة تحكم المشرف |
 | `/help` | User Guide | دليل الاستخدام |
+
+---
+
+## 🚀 24/7 Always-On Execution (ជម្រើសដំណើរការ ២៤/៧)
+
+### 🖥️ Option 1: Local Windows Auto-Startup (ដំណើរការស្វ័យប្រវត្តិលើកុំព្យូទ័រ)
+- **Automatic Startup:** A shortcut is placed in `shell:startup`. Every time your Windows PC boots, the bot launches silently in the background.
+- **Auto-Restart Watchdog:** If the bot stops unexpectedly, `service_runner.bat` restarts it in 5 seconds.
+- **Helper Scripts:**
+  - `status_bot.bat`: Check if the bot is online and view recent logs.
+  - `stop_bot.bat`: Safely terminate the running background bot.
+  - `start.bat`: Run manually with visible terminal for debugging.
+
+### ☁️ Option 2: Cloud 24/7 Hosting (ដំណើរការលើ Cloud ឥតគិតថ្លៃ ២៤ម៉ោង/២៤ម៉ោង)
+- **Multi-Platform Support:** Ready with `Dockerfile` including Node.js 20, Chromium, and Arabic fonts for PDF generation.
+- **Health Check Endpoint:** An HTTP server listens on `PORT` (default 3000) for Render / Koyeb / Fly.io health pings.
+- **Easy Deployment:**
+  1. Double click `push_to_github.bat` to push code to your GitHub repo.
+  2. Create a Free Web Service on [Render.com](https://render.com) or [Koyeb.com](https://www.koyeb.com) connected to that GitHub repo.
+  3. Add environment variable: `BOT_TOKEN` = `your_token`.
+  4. The bot will run 24/7 on the cloud even when your PC is turned off!
