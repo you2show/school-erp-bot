@@ -21,6 +21,63 @@ function resetState(userId) {
   delete userState[userId];
 }
 
+// Convert Eastern Arabic and Persian numerals to standard digits (0-9)
+function normalizeNumbers(str) {
+  if (!str) return '';
+  const arabicDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const persianDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return str
+    .replace(/[٠-٩]/g, d => arabicDigits.indexOf(d))
+    .replace(/[۰-۹]/g, d => persianDigits.indexOf(d))
+    .trim();
+}
+
+// Smart parser for student counts (supports Arabic/English, labeled or plain numbers)
+function parseStudentsInput(rawText) {
+  const text = normalizeNumbers(rawText);
+  // 1. Try labeled format (e.g., 'طلاب: 44 طالبات: 49' or 'Boys: 44, Girls: 49')
+  const boyMatch = text.match(/(?:بنين|طلاب|طلابًا|boys?)\s*[:=]?\s*(\d+)/i);
+  const girlMatch = text.match(/(?:بنات|طالبات|طالبة|girls?)\s*[:=]?\s*(\d+)/i);
+  if (boyMatch && girlMatch) {
+    return {
+      boys: parseInt(boyMatch[1], 10),
+      girls: parseInt(girlMatch[1], 10),
+      valid: true
+    };
+  }
+  // 2. Try any 2 numbers found in the text (e.g., '44 49' or '44, 49' or '44 - 49')
+  const nums = text.match(/\d+/g);
+  if (nums && nums.length >= 2) {
+    return {
+      boys: parseInt(nums[0], 10),
+      girls: parseInt(nums[1], 10),
+      valid: true
+    };
+  }
+  return { valid: false };
+}
+
+// Smart parser for teacher salary and status input
+function parseSalaryInput(rawText) {
+  const text = normalizeNumbers(rawText).toLowerCase();
+  if (text.includes('حكوم') || text.includes('gov')) {
+    return { type: 'government', amount: 0, valid: true };
+  }
+  if (text.includes('تطوع') || text.includes('بدون') || text.includes('volunteer')) {
+    return { type: 'volunteer', amount: 0, valid: true };
+  }
+  const match = text.match(/(\d+(?:\.\d+)?)/);
+  if (match) {
+    const amount = parseFloat(match[1]);
+    return {
+      type: amount > 0 ? 'project' : 'volunteer',
+      amount,
+      valid: true
+    };
+  }
+  return { valid: false };
+}
+
 // 1. STRICT WHITELIST ACCESS CONTROL
 // Allowed IDs: 639844644, 1276188382
 // For any other user: ignore completely and show nothing!
@@ -115,6 +172,35 @@ bot.command('admin', async (ctx) => {
     ? `⚙️ <b>Admin Dashboard</b>\nSelect an action below:`
     : `⚙️ <b>لوحة تحكم المشرف (Admin Dashboard)</b>\nيرجى اختيار العملية المطلوبة أدناه:`;
   return ctx.replyWithHTML(title, keyboards.getAdminPanelKeyboard(lang));
+});
+
+bot.command(['edit', 'editschool'], async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  resetState(userId);
+  const schools = storage.getSchools();
+  const text = (lang === 'en')
+    ? `✏️ <b>Direct Edit:</b> Select the school you want to modify:`
+    : `✏️ <b>تعديل مباشر:</b> اختر المدرسة المراد تعديل بياناتها:`;
+  return ctx.replyWithHTML(text, keyboards.getSchoolSelectForActionKeyboard(schools, 'edit_school', lang));
+});
+
+bot.command(['backup', 'exportjson'], async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  const schoolsPath = path.join(__dirname, '..', 'data', 'schools.json');
+
+  if (fs.existsSync(schoolsPath)) {
+    const dates = formatter.getFormattedDates(lang);
+    const caption = (lang === 'en')
+      ? `💾 <b>Schools JSON Backup Data</b>\n📅 Generated: ${dates.combined}\n\n<i>You can edit this file and send it back to update the database anytime!</i>`
+      : `💾 <b>نسخة احتياطية لقاعدة البيانات (JSON Backup)</b>\n📅 بتاريخ: ${dates.combined}\n\n<i>يمكنكم تعديل هذا الملف وإعادة إرساله لتحديث قاعدة البيانات فوراً في أي وقت!</i>`;
+
+    await ctx.replyWithDocument(
+      { source: schoolsPath, filename: `schools_backup_${new Date().toISOString().slice(0, 10)}.json` },
+      { caption, parse_mode: 'HTML' }
+    );
+  }
 });
 
 // LANGUAGE CALLBACKS
@@ -686,25 +772,17 @@ bot.on('text', async (ctx) => {
     const { schoolId, teacherId } = state;
     resetState(userId);
 
-    let amount = 0;
-    let type = 'project';
-    if (text.toLowerCase() === 'gov' || text.includes('حكوم')) {
-      type = 'government';
-      amount = 0;
-    } else {
-      amount = parseFloat(text);
-      if (isNaN(amount) || amount < 0) {
-        const errMsg = (lang === 'en')
-          ? `⚠️ Invalid amount. Operation cancelled.`
-          : `⚠️ مبلغ غير صالح. تم إلغاء العملية.`;
-        return ctx.replyWithHTML(errMsg, keyboards.getAdminPanelKeyboard(lang));
-      }
-      type = amount > 0 ? 'project' : 'volunteer';
+    const salRes = parseSalaryInput(text);
+    if (!salRes.valid) {
+      const errMsg = (lang === 'en')
+        ? `⚠️ Invalid salary format. Enter a number (e.g. 50, $50) or 'gov' for government salary.`
+        : `⚠️ صيغة الراتب غير واضحة. يرجى إدخال رقم (مثال: 50 أو ٥٠) أو كتابة 'حكومي' للراتب الحكومي.`;
+      return ctx.replyWithHTML(errMsg, keyboards.getAdminPanelKeyboard(lang));
     }
 
     const updated = storage.updateTeacher(schoolId, teacherId, {
-      salary_amount: amount,
-      salary_type: type
+      salary_amount: salRes.amount,
+      salary_type: salRes.type
     });
 
     if (updated) {
@@ -741,16 +819,9 @@ bot.on('text', async (ctx) => {
     const { schoolId, teacherName } = state;
     resetState(userId);
 
-    let amount = 0;
-    let type = 'project';
-    if (text.toLowerCase() === 'gov' || text.includes('حكوم')) {
-      type = 'government';
-      amount = 0;
-    } else {
-      amount = parseFloat(text);
-      if (isNaN(amount) || amount < 0) amount = 0;
-      type = amount > 0 ? 'project' : 'volunteer';
-    }
+    const salRes = parseSalaryInput(text);
+    const amount = salRes.valid ? salRes.amount : 0;
+    const type = salRes.valid ? salRes.type : 'volunteer';
 
     const newTeacher = storage.addTeacher(schoolId, {
       name: teacherName,
@@ -782,18 +853,15 @@ bot.on('text', async (ctx) => {
     const { schoolId } = state;
     resetState(userId);
 
-    const parts = text.split(/[\s,]+/);
-    if (parts.length < 2) {
+    const parsedStu = parseStudentsInput(text);
+    if (!parsedStu.valid) {
       const errParts = (lang === 'en')
-        ? `⚠️ Please enter two numbers separated by a space (e.g., <code>50 40</code>).`
-        : `⚠️ يرجى إدخال رقمين مفصولين بمسافة (مثال: <code>50 40</code>).`;
+        ? `⚠️ Could not parse student counts. Please enter two numbers (e.g. <code>50 40</code> or <code>Boys: 50, Girls: 40</code>).`
+        : `⚠️ تعذر فهم أعداد الطلاب. يرجى إدخال رقمين مفصولين بمسافة (مثال: <code>50 40</code> أو <code>بنين: 50 بنات: 40</code>).`;
       return ctx.replyWithHTML(errParts, keyboards.getAdminPanelKeyboard(lang));
     }
 
-    const boys = parseInt(parts[0]) || 0;
-    const girls = parseInt(parts[1]) || 0;
-
-    const updated = storage.updateStudents(schoolId, boys, girls);
+    const updated = storage.updateStudents(schoolId, parsedStu.boys, parsedStu.girls);
     if (updated) {
       const sName = (lang === 'en') ? (updated.name_en || updated.name_ar) : updated.name_ar;
       const resMsg = (lang === 'en')
@@ -912,14 +980,16 @@ async function setupBotCommands() {
   try {
     await bot.telegram.setMyCommands([
       { command: 'start', description: '🏠 Main Menu / القائمة الرئيسية' },
-      { command: 'lang', description: '🌐 Change Language / تغيير اللغة' },
       { command: 'report', description: '📊 Monthly Report / التقرير الشهري' },
       { command: 'pdf', description: '📄 Export PDF Report / استخراج تقرير PDF' },
       { command: 'schools', description: '🏫 Schools List / قائمة المدارس' },
       { command: 'salaries', description: '💰 Teacher Salaries / رواتب المعلمين' },
       { command: 'students', description: '👨‍🎓 Student Stats / إحصائيات الطلاب' },
-      { command: 'autoreport', description: '📢 Send Auto-Report Now / إرسال التقرير' },
       { command: 'admin', description: '⚙️ Admin Dashboard / لوحة التحكم' },
+      { command: 'edit', description: '✏️ Direct Edit School / تعديل مدرسة' },
+      { command: 'backup', description: '💾 Download JSON / تحميل قاعدة البيانات' },
+      { command: 'autoreport', description: '📢 Send Auto-Report Now / إرسال التقرير' },
+      { command: 'lang', description: '🌐 Change Language / تغيير اللغة' },
       { command: 'help', description: '📖 Guide / دليل الاستخدام' }
     ]);
     console.log('✅ Bot commands registered with Telegram API.');

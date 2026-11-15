@@ -35,15 +35,37 @@
 | Command | Description (English) | الوصف (عربي) |
 |---|---|---|
 | `/start` | Open Main Menu | فتح القائمة الرئيسية |
-| `/lang` | Switch Language (EN / عربي) | تغيير اللغة (الإنجليزية / العربية) |
 | `/report` | Overall Monthly Summary Report | عرض التقرير الشهري الشامل |
 | `/pdf` | Export Official PDF Report Document | استخراج وتحميل تقرير PDF رسمي |
 | `/schools` | School-by-School Reports | عرض تقارير المدارس السبع |
 | `/salaries` | Teacher Salaries & Allowances Breakdown | تقرير رواتب ومخصصات المعلمين |
 | `/students` | Student Enrollment Statistics | إحصائيات وأعداد الطلاب |
-| `/autoreport` | Send Monthly Auto-Report Now | بث وإرسال التقرير التلقائي فوراً |
 | `/admin` | Open Admin Dashboard | فتح لوحة تحكم المشرف |
+| `/edit` | Direct School Data Editor | تعديل مباشر لبيانات المدارس |
+| `/backup` | Download schools.json Backup | تحميل نسخة احتياطية من البيانات |
+| `/autoreport` | Send Monthly Auto-Report Now | بث وإرسال التقرير التلقائي فوراً |
+| `/lang` | Switch Language (EN / عربي) | تغيير اللغة (الإنجليزية / العربية) |
 | `/help` | User Guide | دليل الاستخدام |
+
+---
+
+## ✏️ Easy Real-Time Editing on Telegram (ការកែប្រែទិន្នន័យលើ Telegram យ៉ាងងាយស្រួល)
+
+Authorized users (`639844644`, `1276188382`) can easily edit everything directly through Telegram:
+
+### 1. Interactive Button Editor (ងាយស្រួលបំផុត តាមរយៈប៊ូតុង)
+- Open `/admin` or `/edit`, or tap on any school in `/schools` and click **"✏️ Edit School / تعديل مدرسة"**.
+- Options available:
+  - **👨‍🎓 Edit Student Numbers:** Enter `50 40`, `Boys: 50, Girls: 40`, or Eastern Arabic `٥٠ ٤٠` / `طلاب: 50 طالبات: 40`.
+  - **💵 Edit Teacher Salary:** Select teacher, then enter `50`, `$50`, `٥٠ دولاراً`, or `gov` / `حكومي` for government salary, or `0` / `متطوع` for volunteer.
+  - **➕ Add New Teacher:** Enter name, then enter salary/status.
+  - **🗑 Delete Teacher:** Select school, choose teacher to remove.
+  - **📸 Upload Photos:** Send any photo directly to add to the school gallery.
+
+### 2. Full JSON Backup & One-Click Import (កែប្រែទិន្នន័យច្រើនក្នុងពេលតែមួយ)
+- Type `/backup` -> The bot immediately sends `schools.json` to Telegram.
+- Edit the file on your computer or phone.
+- Send the updated `.json` file back to the bot -> The bot validates and updates the database instantly with zero downtime!
 
 ---
 
