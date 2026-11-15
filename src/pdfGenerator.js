@@ -265,18 +265,20 @@ function renderHtmlReport(schools, stats, lang = 'ar') {
     }
     .signature-area {
       display: flex;
-      justify-content: space-between;
-      margin-top: 25px;
+      justify-content: flex-end;
+      margin-top: 60px;
+      margin-bottom: 25px;
       page-break-inside: avoid;
     }
     .sig-box {
-      width: 42%;
+      width: 260px;
       text-align: center;
-      border-top: 1px solid #718096;
-      padding-top: 6px;
+      border-top: 1.5px solid #4a5568;
+      padding-top: 10px;
       font-weight: 600;
-      font-size: 11px;
-      color: #4a5568;
+      font-size: 12px;
+      color: #2d3748;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -383,9 +385,6 @@ function renderHtmlReport(schools, stats, lang = 'ar') {
   </div>
 
   <div class="signature-area">
-    <div class="sig-box">
-      ${isEn ? 'Prepared & Compiled by:<br>School ERP Administration' : 'إعداد ومراجعة:<br>إدارة نظام المدارس الموحد'}
-    </div>
     <div class="sig-box">
       ${isEn ? 'Supervised & Authorized by:<br>General Academic Direction' : 'اعتماد وتصديق:<br>الإشراف العام والتوجيه التعليمي'}
     </div>

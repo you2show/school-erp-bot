@@ -5,5 +5,5 @@ echo ====================================================
 echo     Starting School ERP Telegram Bot...
 echo     Username: @SchoolERPSystemBot
 echo ====================================================
-node index.js
+node "%~dp0index.js"
 pause

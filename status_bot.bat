@@ -3,7 +3,7 @@ title School ERP Bot Status
 echo ====================================================
 echo        Checking School ERP Bot Status...
 echo ====================================================
-powershell -NoProfile -Command "$procs = Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*telegram-school-report-bot\index.js*' }; if ($procs) { Write-Host 'Status: RUNNING (ONLINE)' -ForegroundColor Green; $procs | Select-Object ProcessId, CommandLine | Format-Table -AutoSize } else { Write-Host 'Status: STOPPED (OFFLINE)' -ForegroundColor Red }"
+powershell -NoProfile -Command "$dir = (Get-Item '%~dp0').FullName.TrimEnd('\'); $procs = Get-CimInstance Win32_Process | Where-Object { ($_.CommandLine -like ('*' + $dir + '\index.js*')) -or ($_.CommandLine -like '*school-erp-bot\index.js*') -or ($_.CommandLine -like '*telegram-school-report-bot\index.js*') }; if ($procs) { Write-Host 'Status: RUNNING (ONLINE)' -ForegroundColor Green; $procs | Select-Object ProcessId, CommandLine | Format-Table -AutoSize } else { Write-Host 'Status: STOPPED (OFFLINE)' -ForegroundColor Red }"
 echo.
 echo Recent Service Logs:
 echo ----------------------------------------------------
