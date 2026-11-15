@@ -101,8 +101,63 @@ bot.command('start', async (ctx) => {
   const lang = storage.getUserLanguage(userId);
   resetState(userId);
 
-  const welcomeText = t('welcome', lang);
+  const stats = storage.getOverallStats();
+  const dates = formatter.getFormattedDates(lang);
+  const isEn = (lang === 'en');
+
+  const welcomeText = isEn
+    ? `🏛 <b>THE 7 SCHOOLS ERP SYSTEM</b>\n` +
+      `Automated tracking & executive reporting for the 7 schools network.\n` +
+      `📅 <b>Date:</b> ${dates.combined}\n\n` +
+      `📊 <b>Live Network Overview:</b>\n` +
+      `• Active Schools: <b>${stats.schoolsCount} Institutions</b>\n` +
+      `• Total Students: <b>${stats.totalStudents}</b> (${stats.totalBoys} Boys | ${stats.totalGirls} Girls)\n` +
+      `• Teaching Faculty: <b>${stats.totalTeachers}</b> (${stats.govtTeachers} Govt | ${stats.paidTeachers} Paid | ${stats.volunteerTeachers} Unpaid)\n` +
+      `• Monthly Payroll: <b>$${stats.totalMonthlySalary}.00 / mo</b> ($${stats.totalMonthlySalary * 12}.00 / yr)\n\n` +
+      `👇 <i>Choose an action below or tap the buttons on your keyboard:</i>`
+    : `🏛 <b>نـظـام إدارة وتقارير المـدارس السـبـع</b>\n` +
+      `المنظومة الموحدة للمتابعة والتقارير الشهرية لشبكة المدارس الإسلامية السبع.\n` +
+      `📅 <b>التاريخ:</b> ${dates.combined}\n\n` +
+      `📊 <b>المؤشرات العامة المحدثة للشبكة:</b>\n` +
+      `• المدارس النشطة: <b>${stats.schoolsCount} مدارس تعليمية</b>\n` +
+      `• إجمالي الطلاب: <b>${stats.totalStudents} طالباً وطالبة</b> (${stats.totalBoys} بنين | ${stats.totalGirls} بنات)\n` +
+      `• الكادر التعليمي: <b>${stats.totalTeachers} معلماً ومعلمة</b> (${stats.govtTeachers} حكومي | ${stats.paidTeachers} مخصص | ${stats.volunteerTeachers} متطوع)\n` +
+      `• الميزانية الشهرية: <b>${stats.totalMonthlySalary} دولار شهرياً</b> (${stats.totalMonthlySalary * 12} دولار سنوياً)\n\n` +
+      `👇 <i>يرجى اختيار القسم المطلوب من الأزرار أو من لوحة المفاتيح بالأسفل:</i>`;
+
+  await ctx.reply(isEn ? '⚡️ Quick Access Keyboard' : '⚡️ أزرار الوصول السريع مفعلة بالأسفل', keyboards.getPersistentReplyKeyboard(lang));
   await ctx.replyWithHTML(welcomeText, keyboards.getMainMenuInline(lang));
+});
+
+// PERSISTENT BOTTOM KEYBOARD HANDLERS
+bot.hears(['📊 Overall Report', '📊 التقرير الشامل'], async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  const schools = storage.getSchools();
+  const stats = storage.getOverallStats();
+  const text = formatter.formatOverallReport(schools, stats, lang);
+  await ctx.replyWithHTML(text, keyboards.getOverallReportInline(lang));
+});
+
+bot.hears(['🏫 7 Schools', '🏫 المدارس السبع'], async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  const schools = storage.getSchools();
+  await ctx.replyWithHTML(t('select_school_view', lang), keyboards.getSchoolsKeyboard(schools, lang));
+});
+
+bot.hears(['📄 Export PDF', '📄 تقرير PDF'], async (ctx) => {
+  await handleExportPdf(ctx);
+});
+
+bot.hears(['⚙️ Admin Panel', '⚙️ لوحة الإدارة'], async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  resetState(userId);
+  const title = (lang === 'en')
+    ? `⚙️ <b>Admin Dashboard</b>\nSelect an action below:`
+    : `⚙️ <b>لوحة تحكم المشرف (Admin Dashboard)</b>\nيرجى اختيار العملية المطلوبة أدناه:`;
+  return ctx.replyWithHTML(title, keyboards.getAdminPanelKeyboard(lang));
 });
 
 // LANGUAGE SELECTION COMMAND
@@ -372,6 +427,23 @@ bot.action('menu_admin', async (ctx) => {
   }
 });
 
+bot.action('admin_select_school_edit', async (ctx) => {
+  const userId = ctx.from.id;
+  const lang = storage.getUserLanguage(userId);
+  const schools = storage.getSchools();
+  const text = (lang === 'en')
+    ? `✏️ <b>Select school to view & edit:</b>`
+    : `✏️ <b>اختر مدرسة للاطلاع وتعديل بياناتها مباشرة:</b>`;
+  try {
+    await ctx.editMessageText(text, {
+      parse_mode: 'HTML',
+      ...keyboards.getSchoolSelectForActionKeyboard(schools, 'school', lang)
+    });
+  } catch (e) {
+    await ctx.replyWithHTML(text, keyboards.getSchoolSelectForActionKeyboard(schools, 'school', lang));
+  }
+});
+
 // SCHOOL DETAIL VIEW
 bot.action(/^school_(.+)$/, async (ctx) => {
   const userId = ctx.from.id;
@@ -526,7 +598,7 @@ bot.action(/^sel_t_sal_(.+)_(.+)$/, async (ctx) => {
     ? `📌 Current Salary: <b>${curSal}</b>\n\n${t('prompt_new_salary', lang)}`
     : `📌 الراتب الحالي: <b>${curSal}</b>\n\n${t('prompt_new_salary', lang)}`;
 
-  await ctx.replyWithHTML(msg, keyboards.getCancelKeyboard('menu_admin', lang));
+  await ctx.replyWithHTML(msg, keyboards.getCancelKeyboard(`school_${schoolId}`, lang));
 });
 
 // ADMIN: ADD TEACHER
@@ -552,7 +624,7 @@ bot.action(/^add_teacher_(.+)$/, async (ctx) => {
   if (!school) return ctx.answerCbQuery('Not found');
 
   userState[userId] = { action: 'awaiting_add_teacher_name', schoolId };
-  await ctx.replyWithHTML(`➕ <b>${school.name_en || school.name_ar}</b>\n\n${t('prompt_teacher_name', lang)}`, keyboards.getCancelKeyboard('menu_admin', lang));
+  await ctx.replyWithHTML(`➕ <b>${school.name_en || school.name_ar}</b>\n\n${t('prompt_teacher_name', lang)}`, keyboards.getCancelKeyboard(`school_${schoolId}`, lang));
 });
 
 bot.action(/^sel_school_addt_(.+)$/, async (ctx) => {
@@ -563,7 +635,7 @@ bot.action(/^sel_school_addt_(.+)$/, async (ctx) => {
   if (!school) return ctx.answerCbQuery('Not found');
 
   userState[userId] = { action: 'awaiting_add_teacher_name', schoolId };
-  await ctx.replyWithHTML(`➕ <b>${school.name_en || school.name_ar}</b>\n\n${t('prompt_teacher_name', lang)}`, keyboards.getCancelKeyboard('menu_admin', lang));
+  await ctx.replyWithHTML(`➕ <b>${school.name_en || school.name_ar}</b>\n\n${t('prompt_teacher_name', lang)}`, keyboards.getCancelKeyboard(`school_${schoolId}`, lang));
 });
 
 // ADMIN: EDIT STUDENTS
@@ -595,7 +667,7 @@ bot.action(/^sel_school_stu_(.+)$/, async (ctx) => {
     ? `👨‍🎓 <b>${school.name_en || school.name_ar}</b>\n• Current: Total ${cur.total} (Boys: ${cur.boys} | Girls: ${cur.girls})\n\n${t('prompt_students', lang)}`
     : `👨‍🎓 <b>${school.name_ar}</b>\n• حالياً: الإجمالي ${cur.total} (بنين: ${cur.boys} | بنات: ${cur.girls})\n\n${t('prompt_students', lang)}`;
 
-  await ctx.replyWithHTML(prompt, keyboards.getCancelKeyboard('menu_admin', lang));
+  await ctx.replyWithHTML(prompt, keyboards.getCancelKeyboard(`school_${schoolId}`, lang));
 });
 
 // ADMIN: UPLOAD PHOTO
@@ -625,7 +697,7 @@ bot.action(/^sel_school_photo_(.+)$/, async (ctx) => {
     ? `📸 <b>${school.name_en || school.name_ar}</b>\n\n${t('prompt_upload_photo', lang)}`
     : `📸 <b>${school.name_ar}</b>\n\n${t('prompt_upload_photo', lang)}`;
 
-  await ctx.replyWithHTML(prompt, keyboards.getCancelKeyboard('menu_admin', lang));
+  await ctx.replyWithHTML(prompt, keyboards.getCancelKeyboard(`school_${schoolId}`, lang));
 });
 
 // ADMIN: DELETE TEACHER
@@ -664,11 +736,13 @@ bot.action(/^confirm_delt_(.+)_(.+)$/, async (ctx) => {
   const deleted = storage.deleteTeacher(schoolId, teacherId);
 
   if (deleted) {
+    const school = storage.getSchool(schoolId);
     const name = (lang === 'en') ? (deleted.name_en || deleted.name_ar) : deleted.name_ar;
     const msg = (lang === 'en')
       ? `✅ <b>${name}</b> was removed successfully.`
       : `✅ تم حذف المعلّم <b>${name}</b> بنجاح!`;
-    await ctx.replyWithHTML(msg, keyboards.getAdminPanelKeyboard(lang));
+    const updatedDetail = formatter.formatSchoolDetail(school, lang);
+    await ctx.replyWithHTML(`${msg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
   } else {
     await ctx.replyWithHTML('Not found / تعذر العثور على المعلم', keyboards.getAdminPanelKeyboard(lang));
   }
@@ -792,15 +866,10 @@ bot.on('text', async (ctx) => {
       const sal = (lang === 'en') ? (updated.salary_text_en || `$${updated.salary_amount}`) : (updated.salary_text_ar || `${updated.salary_amount}$`);
 
       const resMsg = (lang === 'en')
-        ? `✅ <b>Salary Updated Successfully!</b>\n` +
-          `👤 Teacher: <b>${tName}</b>\n` +
-          `💵 New Salary: <b>${sal}</b>\n` +
-          `🏫 School: <b>${sName}</b>`
-        : `✅ <b>تم تعديل الراتب بنجاح!</b>\n` +
-          `👤 المعلّم: <b>${tName}</b>\n` +
-          `💵 الراتب الجديد: <b>${sal}</b>\n` +
-          `🏫 المدرسة: <b>${sName}</b>`;
-      return ctx.replyWithHTML(resMsg, keyboards.getAdminPanelKeyboard(lang));
+        ? `✅ <b>Salary Updated!</b> 👤 <b>${tName}</b>: <b>${sal}</b>`
+        : `✅ <b>تم تعديل الراتب!</b> 👤 <b>${tName}</b>: <b>${sal}</b>`;
+      const updatedDetail = formatter.formatSchoolDetail(school, lang);
+      return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
     }
   }
 
@@ -833,19 +902,13 @@ bot.on('text', async (ctx) => {
 
     const school = storage.getSchool(schoolId);
     const sal = (lang === 'en') ? newTeacher.salary_text_en : newTeacher.salary_text_ar;
-    const sName = (lang === 'en') ? (school.name_en || school.name_ar) : school.name_ar;
 
     const resMsg = (lang === 'en')
-      ? `✅ <b>New Teacher Added Successfully!</b>\n` +
-        `👤 Name: <b>${newTeacher.name_en}</b>\n` +
-        `💵 Salary: <b>${sal}</b>\n` +
-        `🏫 School: <b>${sName}</b>`
-      : `✅ <b>تمت إضافة المعلّم الجديد بنجاح!</b>\n` +
-        `👤 الاسم: <b>${newTeacher.name_ar}</b>\n` +
-        `💵 الراتب/المخصص: <b>${sal}</b>\n` +
-        `🏫 المدرسة: <b>${sName}</b>`;
+      ? `✅ <b>New Teacher Added!</b> 👤 <b>${newTeacher.name_en}</b> (${sal})`
+      : `✅ <b>تمت إضافة المعلّم الجديد بنجاح!</b> 👤 <b>${newTeacher.name_ar}</b> (${sal})`;
 
-    return ctx.replyWithHTML(resMsg, keyboards.getAdminPanelKeyboard(lang));
+    const updatedDetail = formatter.formatSchoolDetail(school, lang);
+    return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
   }
 
   // 4. Edit Student Numbers
@@ -863,18 +926,12 @@ bot.on('text', async (ctx) => {
 
     const updated = storage.updateStudents(schoolId, parsedStu.boys, parsedStu.girls);
     if (updated) {
-      const sName = (lang === 'en') ? (updated.name_en || updated.name_ar) : updated.name_ar;
       const resMsg = (lang === 'en')
-        ? `✅ <b>Student Enrollment Updated!</b>\n` +
-          `🏫 School: <b>${sName}</b>\n` +
-          `👥 Total Students: <b>${updated.students.total}</b>\n` +
-          `👦 Boys: <b>${updated.students.boys}</b> | 👧 Girls: <b>${updated.students.girls}</b>`
-        : `✅ <b>تم تعديل أعداد الطلاب بنجاح!</b>\n` +
-          `🏫 المدرسة: <b>${sName}</b>\n` +
-          `👥 الإجمالي: <b>${updated.students.total}</b>\n` +
-          `👦 بنين: <b>${updated.students.boys}</b> | 👧 بنات: <b>${updated.students.girls}</b>`;
+        ? `✅ <b>Student Enrollment Updated!</b> Total: <b>${updated.students.total}</b> (${updated.students.boys} Boys | ${updated.students.girls} Girls)`
+        : `✅ <b>تم تعديل أعداد الطلاب بنجاح!</b> الإجمالي: <b>${updated.students.total}</b> (${updated.students.boys} بنين | ${updated.students.girls} بنات)`;
 
-      return ctx.replyWithHTML(resMsg, keyboards.getAdminPanelKeyboard(lang));
+      const updatedDetail = formatter.formatSchoolDetail(updated, lang);
+      return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(updated, lang));
     }
   }
 });
@@ -904,13 +961,13 @@ bot.on('photo', async (ctx) => {
 
     storage.addSchoolPhoto(schoolId, filename);
     const school = storage.getSchool(schoolId);
-    const sName = (lang === 'en') ? (school.name_en || school.name_ar) : school.name_ar;
 
     const succMsg = (lang === 'en')
-      ? `✅ <b>Photo Added Successfully!</b>\n🏫 School: <b>${sName}</b>\nTotal Photos: <b>${school.photos.length}</b>.`
-      : `✅ <b>تم رفع وحفظ الصورة بنجاح!</b>\n🏫 المدرسة: <b>${sName}</b>\nإجمالي الصور المتوفرة: <b>${school.photos.length}</b>.`;
+      ? `✅ <b>Photo Added to School Gallery!</b> (Total Photos: <b>${school.photos.length}</b>)`
+      : `✅ <b>تم رفع وحفظ الصورة في أرشيف المدرسة!</b> (إجمالي الصور: <b>${school.photos.length}</b>)`;
 
-    await ctx.replyWithHTML(succMsg, keyboards.getAdminPanelKeyboard(lang));
+    const updatedDetail = formatter.formatSchoolDetail(school, lang);
+    await ctx.replyWithHTML(`${succMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
   } catch (err) {
     console.error('Error saving photo:', err);
     const errMsg = (lang === 'en')
