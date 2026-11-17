@@ -271,7 +271,34 @@ function getOverallStats() {
   };
 }
 
+const SUPER_ADMIN_ID = 1276188382;
+
+function isSuperAdmin(userId) {
+  return Number(userId) === SUPER_ADMIN_ID;
+}
+
+function getSuperAdminId() {
+  return SUPER_ADMIN_ID;
+}
+
+function isSuperAdminAlertsEnabled() {
+  const cfg = getConfig();
+  return cfg.superAdminAlerts !== false;
+}
+
+function setSuperAdminAlerts(enabled) {
+  const cfg = getConfig();
+  cfg.superAdminAlerts = !!enabled;
+  saveConfig(cfg);
+  return cfg.superAdminAlerts;
+}
+
 module.exports = {
+  SUPER_ADMIN_ID,
+  isSuperAdmin,
+  getSuperAdminId,
+  isSuperAdminAlertsEnabled,
+  setSuperAdminAlerts,
   ALLOWED_USER_IDS,
   PHOTOS_DIR,
   getSchools,

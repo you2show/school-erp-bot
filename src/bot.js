@@ -21,6 +21,27 @@ function resetState(userId) {
   delete userState[userId];
 }
 
+// Private Notification Helper for Super Admin (1276188382 only)
+async function notifySuperAdmin(eventTitle, details, actorId = null) {
+  if (!storage.isSuperAdminAlertsEnabled()) return;
+  const superAdminId = storage.getSuperAdminId();
+  const timeStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Phnom_Penh' });
+  const actorText = actorId ? `\n👤 <b>Action by User ID:</b> <code>${actorId}</code>` : '';
+
+  const msg = 
+    `🔔 <b>[Private Super-Admin Alert]</b>\n` +
+    `⚡️ <b>Event:</b> ${eventTitle}\n` +
+    `📝 <b>Details:</b> ${details}` +
+    actorText + `\n` +
+    `⏰ <b>Time:</b> <code>${timeStr}</code>`;
+
+  try {
+    await bot.telegram.sendMessage(superAdminId, msg, { parse_mode: 'HTML' });
+  } catch (err) {
+    console.error('Failed to notify super admin:', err.message);
+  }
+}
+
 // Convert Eastern Arabic and Persian numerals to standard digits (0-9)
 function normalizeNumbers(str) {
   if (!str) return '';
@@ -126,7 +147,7 @@ bot.command('start', async (ctx) => {
       `👇 <i>يرجى اختيار القسم المطلوب من الأزرار أو من لوحة المفاتيح بالأسفل:</i>`;
 
   await ctx.reply(isEn ? '⚡️ Quick Access Keyboard' : '⚡️ أزرار الوصول السريع مفعلة بالأسفل', keyboards.getPersistentReplyKeyboard(lang));
-  await ctx.replyWithHTML(welcomeText, keyboards.getMainMenuInline(lang));
+  await ctx.replyWithHTML(welcomeText, keyboards.getMainMenuInline(lang, userId));
 });
 
 // PERSISTENT BOTTOM KEYBOARD HANDLERS
@@ -201,7 +222,7 @@ bot.command('salaries', async (ctx) => {
   const schools = storage.getSchools();
   const stats = storage.getOverallStats();
   const text = formatter.formatSalariesReport(schools, stats, lang);
-  await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang));
+  await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang, userId));
 });
 
 bot.command('students', async (ctx) => {
@@ -210,7 +231,7 @@ bot.command('students', async (ctx) => {
   const schools = storage.getSchools();
   const stats = storage.getOverallStats();
   const text = formatter.formatStudentsReport(schools, stats, lang);
-  await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang));
+  await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang, userId));
 });
 
 bot.command('autoreport', async (ctx) => {
@@ -269,14 +290,14 @@ bot.action('set_lang_en', async (ctx) => {
   const userId = ctx.from.id;
   storage.setUserLanguage(userId, 'en');
   await ctx.answerCbQuery('Language set to English');
-  await ctx.replyWithHTML(t('lang_changed', 'en'), keyboards.getMainMenuInline('en'));
+  await ctx.replyWithHTML(t('lang_changed', 'en'), keyboards.getMainMenuInline('en', userId));
 });
 
 bot.action('set_lang_ar', async (ctx) => {
   const userId = ctx.from.id;
   storage.setUserLanguage(userId, 'ar');
   await ctx.answerCbQuery('تم تعيين اللغة إلى العربية');
-  await ctx.replyWithHTML(t('lang_changed', 'ar'), keyboards.getMainMenuInline('ar'));
+  await ctx.replyWithHTML(t('lang_changed', 'ar'), keyboards.getMainMenuInline('ar', userId));
 });
 
 // PDF EXPORT HANDLER
@@ -337,10 +358,10 @@ bot.action('menu_back', async (ctx) => {
   try {
     await ctx.editMessageText(title, {
       parse_mode: 'HTML',
-      ...keyboards.getMainMenuInline(lang)
+      ...keyboards.getMainMenuInline(lang, userId)
     });
   } catch (e) {
-    await ctx.replyWithHTML(title, keyboards.getMainMenuInline(lang));
+    await ctx.replyWithHTML(title, keyboards.getMainMenuInline(lang, userId));
   }
 });
 
@@ -381,9 +402,9 @@ bot.action('menu_salaries', async (ctx) => {
   const text = formatter.formatSalariesReport(schools, stats, lang);
 
   try {
-    await ctx.editMessageText(text, { parse_mode: 'HTML', ...keyboards.getMainMenuInline(lang) });
+    await ctx.editMessageText(text, { parse_mode: 'HTML', ...keyboards.getMainMenuInline(lang, userId) });
   } catch (e) {
-    await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang));
+    await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang, userId));
   }
 });
 
@@ -395,9 +416,9 @@ bot.action('menu_students', async (ctx) => {
   const text = formatter.formatStudentsReport(schools, stats, lang);
 
   try {
-    await ctx.editMessageText(text, { parse_mode: 'HTML', ...keyboards.getMainMenuInline(lang) });
+    await ctx.editMessageText(text, { parse_mode: 'HTML', ...keyboards.getMainMenuInline(lang, userId) });
   } catch (e) {
-    await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang));
+    await ctx.replyWithHTML(text, keyboards.getMainMenuInline(lang, userId));
   }
 });
 
@@ -425,6 +446,146 @@ bot.action('menu_admin', async (ctx) => {
   } catch (e) {
     await ctx.replyWithHTML(title, keyboards.getAdminPanelKeyboard(lang));
   }
+});
+
+// ========================================================
+// SUPER ADMIN DASHBOARD & NOTIFICATION ACTIONS (1276188382 ONLY)
+// ========================================================
+bot.command(['super', 'master'], async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return;
+
+  const alertsEnabled = storage.isSuperAdminAlertsEnabled();
+  const text = 
+    `👑 <b>Super Admin Private Control Panel</b>\n` +
+    `Welcome, Master! Only you (ID: <code>${userId}</code>) can see and access this dashboard.\n\n` +
+    `• <b>Private Alerts:</b> ${alertsEnabled ? '🟢 Active (Instant notifications on any change)' : '🔴 Muted'}\n` +
+    `• <b>Host Platform:</b> Local PC (Windows)\n` +
+    `• <b>Bot Token:</b> Active & Healthy\n\n` +
+    `Select an action below:`;
+
+  return ctx.replyWithHTML(text, keyboards.getSuperAdminKeyboard(alertsEnabled));
+});
+
+bot.action('super_menu', async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return ctx.answerCbQuery();
+
+  await ctx.answerCbQuery();
+  const alertsEnabled = storage.isSuperAdminAlertsEnabled();
+  const text = 
+    `👑 <b>Super Admin Private Control Panel</b>\n` +
+    `Welcome, Master! Only you (ID: <code>${userId}</code>) can see and access this dashboard.\n\n` +
+    `• <b>Private Alerts:</b> ${alertsEnabled ? '🟢 Active (Instant notifications on any change)' : '🔴 Muted'}\n` +
+    `• <b>Host Platform:</b> Local PC (Windows)\n` +
+    `• <b>Bot Token:</b> Active & Healthy\n\n` +
+    `Select an action below:`;
+
+  try {
+    await ctx.editMessageText(text, {
+      parse_mode: 'HTML',
+      ...keyboards.getSuperAdminKeyboard(alertsEnabled)
+    });
+  } catch (e) {
+    await ctx.replyWithHTML(text, keyboards.getSuperAdminKeyboard(alertsEnabled));
+  }
+});
+
+bot.action('super_toggle_alerts', async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return ctx.answerCbQuery();
+
+  const current = storage.isSuperAdminAlertsEnabled();
+  const newState = storage.setSuperAdminAlerts(!current);
+  await ctx.answerCbQuery(newState ? '🔔 Alerts Activated!' : '🔕 Alerts Muted!');
+
+  const text = 
+    `👑 <b>Super Admin Private Control Panel</b>\n` +
+    `Welcome, Master! Only you (ID: <code>${userId}</code>) can see and access this dashboard.\n\n` +
+    `• <b>Private Alerts:</b> ${newState ? '🟢 Active (Instant notifications on any change)' : '🔴 Muted'}\n` +
+    `• <b>Host Platform:</b> Local PC (Windows)\n` +
+    `• <b>Bot Token:</b> Active & Healthy\n\n` +
+    `Select an action below:`;
+
+  try {
+    await ctx.editMessageText(text, {
+      parse_mode: 'HTML',
+      ...keyboards.getSuperAdminKeyboard(newState)
+    });
+  } catch (e) {}
+});
+
+bot.action('super_snapshot', async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return ctx.answerCbQuery();
+
+  await ctx.answerCbQuery('Generating snapshot...');
+  const stats = storage.getOverallStats();
+  const schools = storage.getSchools();
+
+  let schoolBrief = '';
+  schools.forEach((s, idx) => {
+    const totalStu = (s.students?.boys || 0) + (s.students?.girls || 0);
+    const staffCount = s.teachers?.length || 0;
+    schoolBrief += `  ${idx + 1}. <b>${s.name_en}</b>: ${totalStu} students, ${staffCount} staff\n`;
+  });
+
+  const msg = 
+    `📊 <b>[Instant Network Snapshot]</b>\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `🏫 <b>Institutions:</b> ${stats.schoolsCount} Active Centers\n` +
+    `👨‍🎓 <b>Students:</b> ${stats.totalStudents} (${stats.totalBoys} 👦 Boys | ${stats.totalGirls} 👧 Girls)\n` +
+    `👨‍🏫 <b>Teaching Faculty:</b> ${stats.totalTeachers} Educators\n` +
+    `   • Paid: ${stats.paidTeachers} 🟡 | Gov: ${stats.govtTeachers} 🟢 | Volunteer: ${stats.volunteerTeachers} 🔴\n` +
+    `💰 <b>Monthly Total Payroll:</b> <b>$${stats.totalMonthlySalary}.00</b>\n` +
+    `💵 <b>Annual Budget:</b> $${(stats.totalMonthlySalary * 12).toLocaleString()}.00\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `<b>School Breakdown:</b>\n${schoolBrief}` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `⏰ Generated: <code>${new Date().toLocaleString()}</code>`;
+
+  await ctx.replyWithHTML(msg, keyboards.getSuperAdminKeyboard(storage.isSuperAdminAlertsEnabled()));
+});
+
+bot.action('super_sys_status', async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return ctx.answerCbQuery();
+
+  await ctx.answerCbQuery();
+  const uptimeSec = Math.floor(process.uptime());
+  const hours = Math.floor(uptimeSec / 3600);
+  const minutes = Math.floor((uptimeSec % 3600) / 60);
+  const seconds = uptimeSec % 60;
+  const mem = process.memoryUsage();
+  const rssMb = (mem.rss / 1024 / 1024).toFixed(1);
+  const heapMb = (mem.heapUsed / 1024 / 1024).toFixed(1);
+
+  const msg = 
+    `🖥️ <b>[PC System & Bot Diagnostics]</b>\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `🟢 <b>Bot Status:</b> RUNNING (ONLINE)\n` +
+    `⏱️ <b>Uptime:</b> ${hours}h ${minutes}m ${seconds}s\n` +
+    `💻 <b>Platform:</b> ${process.platform} (${process.arch})\n` +
+    `⚙️ <b>Node.js:</b> ${process.version}\n` +
+    `📊 <b>Memory RSS:</b> ${rssMb} MB (Heap: ${heapMb} MB)\n` +
+    `🆔 <b>Process ID (PID):</b> <code>${process.pid}</code>\n` +
+    `🌐 <b>Health Port:</b> 3000 (Active)\n` +
+    `👑 <b>Super Admin:</b> <code>${userId}</code> (Authenticated)\n` +
+    `━━━━━━━━━━━━━━━━━━━━`;
+
+  await ctx.replyWithHTML(msg, keyboards.getSuperAdminKeyboard(storage.isSuperAdminAlertsEnabled()));
+});
+
+bot.action('super_test_ping', async (ctx) => {
+  const userId = ctx.from.id;
+  if (!storage.isSuperAdmin(userId)) return ctx.answerCbQuery();
+
+  await ctx.answerCbQuery('Ping sent!');
+  await notifySuperAdmin(
+    'Private Ping Test',
+    'This is a private test notification confirming your direct alert channel is operating at 100% efficiency. 🚀',
+    userId
+  );
 });
 
 bot.action('admin_select_school_edit', async (ctx) => {
@@ -743,6 +904,11 @@ bot.action(/^confirm_delt_(.+)_(.+)$/, async (ctx) => {
       : `✅ تم حذف المعلّم <b>${name}</b> بنجاح!`;
     const updatedDetail = formatter.formatSchoolDetail(school, lang);
     await ctx.replyWithHTML(`${msg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
+    await notifySuperAdmin(
+      'Teacher Removed',
+      `School: <b>${school.name_en || school.name_ar}</b>\nDeleted Teacher: <b>${deleted.name_en || deleted.name_ar}</b>`,
+      userId
+    );
   } else {
     await ctx.replyWithHTML('Not found / تعذر العثور على المعلم', keyboards.getAdminPanelKeyboard(lang));
   }
@@ -823,6 +989,11 @@ bot.on('document', async (ctx) => {
         `• إجمالي الميزانية: <b>${newStats.totalMonthlySalary} دولار شهرياً</b>`;
 
     await ctx.replyWithHTML(succMsg, keyboards.getAdminPanelKeyboard(lang));
+    await notifySuperAdmin(
+      'Full Database Restored from JSON',
+      `Restored <b>${newStats.schoolsCount}</b> schools with <b>${newStats.totalTeachers}</b> teachers. Budget: <b>$${newStats.totalMonthlySalary}/mo</b>`,
+      userId
+    );
   } catch (err) {
     console.error('Error importing JSON:', err);
     const errMsg = (lang === 'en')
@@ -869,6 +1040,11 @@ bot.on('text', async (ctx) => {
         ? `✅ <b>Salary Updated!</b> 👤 <b>${tName}</b>: <b>${sal}</b>`
         : `✅ <b>تم تعديل الراتب!</b> 👤 <b>${tName}</b>: <b>${sal}</b>`;
       const updatedDetail = formatter.formatSchoolDetail(school, lang);
+      await notifySuperAdmin(
+        'Teacher Salary Modified',
+        `School: <b>${sName}</b>\nTeacher: <b>${tName}</b>\nSalary: <b>${sal}</b>`,
+        userId
+      );
       return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
     }
   }
@@ -908,6 +1084,11 @@ bot.on('text', async (ctx) => {
       : `✅ <b>تمت إضافة المعلّم الجديد بنجاح!</b> 👤 <b>${newTeacher.name_ar}</b> (${sal})`;
 
     const updatedDetail = formatter.formatSchoolDetail(school, lang);
+    await notifySuperAdmin(
+      'New Teacher Added',
+      `School: <b>${school.name_en || school.name_ar}</b>\nTeacher: <b>${newTeacher.name_en || newTeacher.name_ar}</b> (${sal})`,
+      userId
+    );
     return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
   }
 
@@ -931,6 +1112,11 @@ bot.on('text', async (ctx) => {
         : `✅ <b>تم تعديل أعداد الطلاب بنجاح!</b> الإجمالي: <b>${updated.students.total}</b> (${updated.students.boys} بنين | ${updated.students.girls} بنات)`;
 
       const updatedDetail = formatter.formatSchoolDetail(updated, lang);
+      await notifySuperAdmin(
+        'Student Enrollment Updated',
+        `School: <b>${updated.name_en || updated.name_ar}</b>\nBoys: <b>${updated.students.boys}</b>, Girls: <b>${updated.students.girls}</b> (Total: <b>${updated.students.total}</b>)`,
+        userId
+      );
       return ctx.replyWithHTML(`${resMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(updated, lang));
     }
   }
@@ -968,6 +1154,11 @@ bot.on('photo', async (ctx) => {
 
     const updatedDetail = formatter.formatSchoolDetail(school, lang);
     await ctx.replyWithHTML(`${succMsg}\n\n${updatedDetail}`, keyboards.getSchoolActionKeyboard(school, lang));
+    await notifySuperAdmin(
+      'School Photo Uploaded',
+      `School: <b>${school.name_en || school.name_ar}</b>\nFilename: <code>${filename}</code>\nTotal Photos: <b>${school.photos.length}</b>`,
+      userId
+    );
   } catch (err) {
     console.error('Error saving photo:', err);
     const errMsg = (lang === 'en')
@@ -1077,6 +1268,7 @@ async function start() {
   });
 
   console.log('✅ Polling started! Bot is active and listening for authorized messages.');
+  await notifySuperAdmin('Bot Service Started on PC', 'School ERP Bot is Online & Polling for commands on Windows PC.');
 }
 
 if (!process.env.VERCEL) {

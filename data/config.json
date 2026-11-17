@@ -18,5 +18,7 @@
   },
   "autoReportEnabled": true,
   "autoReportCron": "0 8 1 * *",
-  "lastReportSent": null
+  "lastReportSent": null,
+  "superAdmin": 1276188382,
+  "superAdminAlerts": true
 }

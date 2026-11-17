@@ -26,8 +26,8 @@ function getLanguageSelectKeyboard() {
 }
 
 // 2. Streamlined Clean Main Menu (Fast & uncluttered)
-function getMainMenuInline(lang = 'ar') {
-  return Markup.inlineKeyboard([
+function getMainMenuInline(lang = 'ar', userId = null) {
+  const buttons = [
     [
       Markup.button.callback(t('btn_overall_report', lang), 'menu_overall'),
       Markup.button.callback(t('btn_schools_report', lang), 'menu_schools')
@@ -38,6 +38,37 @@ function getMainMenuInline(lang = 'ar') {
     ],
     [
       Markup.button.callback(t('btn_language', lang), 'menu_language')
+    ]
+  ];
+
+  // Exclusively for Super Admin 1276188382 (completely hidden from 639844644)
+  if (userId && Number(userId) === 1276188382) {
+    buttons.push([
+      Markup.button.callback('👑 Master Control & Alerts', 'super_menu')
+    ]);
+  }
+
+  return Markup.inlineKeyboard(buttons);
+}
+
+// Super Admin Exclusive Keyboard (Only accessible by 1276188382)
+function getSuperAdminKeyboard(alertsEnabled = true) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(
+        alertsEnabled ? '🔔 Real-Time Alerts: [ON]' : '🔕 Real-Time Alerts: [OFF]',
+        'super_toggle_alerts'
+      )
+    ],
+    [
+      Markup.button.callback('📊 Instant Network Snapshot', 'super_snapshot'),
+      Markup.button.callback('🖥️ PC System & Bot Status', 'super_sys_status')
+    ],
+    [
+      Markup.button.callback('📢 Test Private Alert Ping', 'super_test_ping')
+    ],
+    [
+      Markup.button.callback('🔙 Back to Main Menu', 'menu_back')
     ]
   ]);
 }
@@ -166,6 +197,7 @@ module.exports = {
   getPersistentReplyKeyboard,
   getLanguageSelectKeyboard,
   getMainMenuInline,
+  getSuperAdminKeyboard,
   getOverallReportInline,
   getSchoolsKeyboard,
   getSchoolActionKeyboard,
