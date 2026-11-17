@@ -1079,7 +1079,9 @@ async function start() {
   console.log('✅ Polling started! Bot is active and listening for authorized messages.');
 }
 
-start();
+if (!process.env.VERCEL) {
+  start();
+}
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

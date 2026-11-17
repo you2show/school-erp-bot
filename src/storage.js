@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const IS_VERCEL = !!process.env.VERCEL;
+const BUNDLED_DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_DIR = IS_VERCEL ? path.join('/tmp', 'data') : BUNDLED_DATA_DIR;
 const SCHOOLS_FILE = path.join(DATA_DIR, 'schools.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 const PHOTOS_DIR = path.join(DATA_DIR, 'photos');
@@ -14,6 +16,16 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 if (!fs.existsSync(PHOTOS_DIR)) {
   fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+}
+
+// On Vercel, copy initial data files to /tmp if they don't exist yet
+if (IS_VERCEL) {
+  if (!fs.existsSync(SCHOOLS_FILE) && fs.existsSync(path.join(BUNDLED_DATA_DIR, 'schools.json'))) {
+    try { fs.copyFileSync(path.join(BUNDLED_DATA_DIR, 'schools.json'), SCHOOLS_FILE); } catch (e) {}
+  }
+  if (!fs.existsSync(CONFIG_FILE) && fs.existsSync(path.join(BUNDLED_DATA_DIR, 'config.json'))) {
+    try { fs.copyFileSync(path.join(BUNDLED_DATA_DIR, 'config.json'), CONFIG_FILE); } catch (e) {}
+  }
 }
 
 function getSchools() {
