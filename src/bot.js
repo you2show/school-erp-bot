@@ -99,6 +99,16 @@ function parseSalaryInput(rawText) {
   return { valid: false };
 }
 
+// GLOBAL ERROR HANDLER - Prevents unhandled exceptions from crashing or hanging callbacks
+bot.catch(async (err, ctx) => {
+  console.error(`❌ Bot error while handling update ${ctx?.update?.update_id}:`, err?.message || err);
+  if (ctx?.callbackQuery) {
+    try {
+      await ctx.answerCbQuery('⚠️ Notice: Processing update...');
+    } catch (e) {}
+  }
+});
+
 // 1. STRICT WHITELIST ACCESS CONTROL
 // Allowed IDs: 639844644, 1276188382
 // For any other user: ignore completely and show nothing!
@@ -1262,7 +1272,7 @@ async function start() {
   console.log('🚀 Starting School ERP Telegram Bot (@SchoolERPSystemBot)...');
 
   bot.launch({
-    dropPendingUpdates: true
+    dropPendingUpdates: false
   }).catch((err) => {
     console.error('Failed to launch bot:', err);
   });
